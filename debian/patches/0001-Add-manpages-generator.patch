@@ -1,0 +1,56 @@
+From: Shengjing Zhu <zhsj@debian.org>
+Date: Sat, 30 Jan 2021 00:16:27 +0800
+Subject: Add manpages generator
+
+---
+ cmd/dlv/manpages_test.go | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+ create mode 100644 cmd/dlv/manpages_test.go
+
+diff --git a/cmd/dlv/manpages_test.go b/cmd/dlv/manpages_test.go
+new file mode 100644
+index 0000000..d25c971
+--- /dev/null
++++ b/cmd/dlv/manpages_test.go
+@@ -0,0 +1,41 @@
++package main
++
++import (
++	"os"
++	"strconv"
++	"testing"
++	"time"
++
++	"github.com/go-delve/delve/cmd/dlv/cmds"
++	"github.com/spf13/cobra/doc"
++)
++
++func generateManpage() error {
++	outputDir := os.Getenv("MAN_OUTPUT")
++	header := &doc.GenManHeader{
++		Manual:  "General Commands Manual",
++		Section: "1",
++	}
++	// https://reproducible-builds.org/specs/source-date-epoch/
++	sourceDateEpoch, err := strconv.ParseInt(os.Getenv("SOURCE_DATE_EPOCH"), 10, 64)
++	if err == nil {
++		date := time.Unix(sourceDateEpoch, 0)
++		header.Date = &date
++	}
++	root := cmds.New(true)
++	doc.GenManTree(root, header, outputDir)
++	for _, cmd := range root.Commands() {
++		if cmd.Run == nil {
++			if err := doc.GenManTree(cmd, header, outputDir); err != nil {
++				return err
++			}
++		}
++	}
++	return nil
++}
++
++func TestGenerateManpage(t *testing.T) {
++	if err := generateManpage(); err != nil {
++		t.Fatal(err)
++	}
++}

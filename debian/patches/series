@@ -1,0 +1,4 @@
+0001-Add-manpages-generator.patch
+0002-Ignore-all-main_test.patch
+0003-Skip-TestIssue827.patch
+0004-Skip-failed-test-on-arm64.patch
