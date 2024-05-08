@@ -1,4 +1,17 @@
 #!/usr/bin/make -f
 
+export DH_GOLANG_INSTALL_EXTRA := \
+	pkg/dwarf/line/_testdata _fixtures
+export DH_GOLANG_EXCLUDES := _fixtures service/dap/daptest/gen
+export MAN_OUTPUT := $(CURDIR)/debian/
+
 %:
-	dh $@
+	dh $@ --buildsystem=golang --with=golang
+
+override_dh_auto_install:
+	dh_auto_install -- --no-source
+
+execute_before_dh_auto_build:
+	DH_GOLANG_GO_GENERATE=1 \
+	DH_GOLANG_BUILDPKG=github.com/go-delve/delve/pkg/proc/internal/ebpf \
+	dh_auto_build

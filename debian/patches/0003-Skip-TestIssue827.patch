@@ -1,0 +1,21 @@
+From: Shengjing Zhu <zhsj@debian.org>
+Date: Wed, 21 Oct 2020 00:30:32 +0800
+Subject: Skip TestIssue827
+
+Forwarded: not-needed
+---
+ pkg/terminal/command_test.go | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/pkg/terminal/command_test.go b/pkg/terminal/command_test.go
+index d97d0bc..b392dbd 100644
+--- a/pkg/terminal/command_test.go
++++ b/pkg/terminal/command_test.go
+@@ -690,6 +690,7 @@ func TestRestart(t *testing.T) {
+ }
+ 
+ func TestIssue827(t *testing.T) {
++	t.Skip("port 8888 may be bound in buildd server")
+ 	// switching goroutines when the current thread isn't running any goroutine
+ 	// causes nil pointer dereference.
+ 	withTestTerminal("notify-v2", t, func(term *FakeTerminal) {
